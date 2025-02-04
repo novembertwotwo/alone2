@@ -93,4 +93,5 @@ class BoardRepositoryTest {
         Page<Board> boards = boardRepository.searchAll(types, keyword, pageable);
     }
 
+
 }
