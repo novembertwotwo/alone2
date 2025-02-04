@@ -52,6 +52,7 @@ public class BoardSearchImpl implements BoardSearch {
                 .orderBy(board.bno.asc())
                 .fetch();
         long count = queryFactory.selectFrom(board).where(booleanBuilder).where(board.bno.gt(0L)).fetchCount();
+        
         return new PageImpl<>(list, pageable, count);
     }
 

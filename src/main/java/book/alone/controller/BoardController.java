@@ -1,6 +1,8 @@
 package book.alone.controller;
 
+import book.alone.dto.BoardDto;
 import book.alone.dto.PageRequestDto;
+import book.alone.dto.PageResponseDto;
 import book.alone.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,9 @@ public class BoardController {
 
     @GetMapping("/list")
     public void list(PageRequestDto pageRequestDto, Model model) {
-
+        PageResponseDto<BoardDto> responseDto = boardService.list(pageRequestDto);
+        log.info("{}",responseDto);
+        model.addAttribute("responseDTO", responseDto);
     }
 
 }

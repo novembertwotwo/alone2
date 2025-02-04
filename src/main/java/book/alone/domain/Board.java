@@ -19,7 +19,6 @@ public class Board extends BaseEntity{
     @Id
     @GeneratedValue
     private Long bno;
-
     @Column(length = 500,nullable = false)
     private String title;
     @Column(length = 20000,nullable = false)
