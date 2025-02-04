@@ -6,6 +6,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -42,8 +43,16 @@ public class BoardSearchImpl implements BoardSearch {
                    break;
            }
         }
-        List<Board> list = queryFactory.selectFrom(board).where(booleanBuilder).where(board.bno.gt(0L)).fetch();
-        return null;
+        List<Board> list = queryFactory
+                .selectFrom(board)
+                .where(booleanBuilder)
+                .where(board.bno.gt(0L))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(board.bno.asc())
+                .fetch();
+        long count = queryFactory.selectFrom(board).where(booleanBuilder).where(board.bno.gt(0L)).fetchCount();
+        return new PageImpl<>(list, pageable, count);
     }
 
 

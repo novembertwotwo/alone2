@@ -3,6 +3,7 @@ package book.alone.repository;
 import book.alone.domain.Board;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,7 @@ class BoardRepositoryTest {
     private PageableArgumentResolver pageableArgumentResolver;
 
 
-    @Test
+    @BeforeEach
     public void testInsert() {
         IntStream.rangeClosed(1,100).forEach(i->{
                     Board board = Board.builder()

@@ -1,4 +1,4 @@
-package book.alone;
+package book.alone.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
