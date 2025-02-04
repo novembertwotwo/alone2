@@ -43,10 +43,9 @@ public class BoardSearchImpl implements BoardSearch {
            }
         }
         List<Board> list = queryFactory.selectFrom(board).where(booleanBuilder).where(board.bno.gt(0L)).fetch();
-
-
         return null;
     }
+
 
 
 }
