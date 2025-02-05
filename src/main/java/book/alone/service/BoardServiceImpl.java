@@ -70,6 +70,18 @@ public class BoardServiceImpl implements BoardService{
                 .total((int) result.getTotalElements())
                 .build();
     }
+    @Override
+    public PageResponseDto<BoardDto> list2(PageRequestDto pageRequestDto) {
+        String[] types = pageRequestDto.getTypes();
+        String keyword = pageRequestDto.getKeyword();
+        Pageable pageable = pageRequestDto.getPageable();
+        Page<BoardDto> list = boardRepository.searchAll2(types, keyword, pageable);
 
+        return PageResponseDto.<BoardDto>withAll()
+                .pageRequestDto(pageRequestDto)
+                .dtoList(list.getContent())
+                .total((int) list.getTotalElements())
+                .build();
+    }
 
 }
