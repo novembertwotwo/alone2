@@ -1,6 +1,8 @@
 package book.alone.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,8 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 public class BoardDto {
     private Long bno;
+    @NotEmpty
+    @Size(min = 3,max = 100)
     private String title;
+    @NotEmpty
     private String content;
+    @NotEmpty
     private String writer;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
