@@ -53,13 +53,14 @@
                             <th scope="col">RegDate</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <!-- Loop through DTO list -->
+                        <tbody th:with="link = ${pageRequestDTO.getLink()}">
                         <tr th:each="dto : ${responseDTO.dtoList}">
-                            <td th:text="${dto.bno}"></td>
-                            <td th:text="${dto.title}"></td>
-                            <td th:text="${dto.writer}"></td>
-                            <td th:text="${#temporals.format(dto.regDate, 'yyyy-MM-dd')}"></td>
+                            <th scope="row">[[${dto.bno}]]</th>
+                            <td>
+                                <a th:href="|@{/board/read(bno =${dto.bno})}&${link}|"> [[${dto.title}]] </a>
+                            </td>
+                            <td>[[${dto.writer}]]</td>
+                            <td>[[${#temporals.format(dto.regDate, 'yyyy-MM-dd')}]]</td>
                         </tr>
                         </tbody>
                     </table>
