@@ -2,10 +2,9 @@ package book.alone.repository.search;
 
 import book.alone.domain.Board;
 import book.alone.domain.QBoard;
-import book.alone.dto.BoardDto;
+import book.alone.dto.BoardDTO;
 import book.alone.dto.BoardListReplyCountDto;
-import book.alone.dto.QBoardDto;
-import book.alone.dto.QBoardListReplyCountDto;
+import book.alone.dto.QBoardDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -75,7 +74,7 @@ public class BoardSearchImpl implements BoardSearch {
         return new PageImpl<>(list, pageable, count);
     }
     @Override
-    public Page<BoardDto> searchAll2(String[] types, String keyword, Pageable pageable) {
+    public Page<BoardDTO> searchAll2(String[] types, String keyword, Pageable pageable) {
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if ((types != null&& types.length > 0) && keyword != null) {
@@ -94,8 +93,8 @@ public class BoardSearchImpl implements BoardSearch {
             }
         }
 
-        List<BoardDto> content = queryFactory
-                .select(new QBoardDto(board.bno, board.title, board.content, board.writer, board.regDate, board.modDate))
+        List<BoardDTO> content = queryFactory
+                .select(new QBoardDTO(board.bno, board.title, board.content, board.writer, board.regDate, board.modDate))
                 .from(board)
                 .where(booleanBuilder)
                 .where(board.bno.gt(0L))
@@ -139,7 +138,7 @@ public class BoardSearchImpl implements BoardSearch {
                         ,reply.count()
                 ))
                 .from(board)
-                .leftJoin(reply)
+                .leftJoin(reply).fetchJoin()
                 .on(reply.board.eq(board))
                 .where(booleanBuilder)
                 .where(board.bno.gt(0L))
@@ -154,6 +153,4 @@ public class BoardSearchImpl implements BoardSearch {
                 .where(board.bno.gt(0L));
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
-
-
 }

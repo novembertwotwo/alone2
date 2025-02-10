@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @Getter
-public class BoardDto {
+public class BoardDTO {
     private Long bno;
     @NotEmpty
     @Size(min = 3,max = 100)
@@ -23,7 +23,7 @@ public class BoardDto {
     private LocalDateTime regDate;
     private LocalDateTime modDate;
     @QueryProjection
-    public BoardDto(Long bno, String title, String content, String writer, LocalDateTime regDate, LocalDateTime modDate) {
+    public BoardDTO(Long bno, String title, String content, String writer, LocalDateTime regDate, LocalDateTime modDate) {
         this.bno = bno;
         this.title = title;
         this.content = content;

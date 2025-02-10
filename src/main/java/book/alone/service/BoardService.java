@@ -1,20 +1,23 @@
 package book.alone.service;
 
-import book.alone.domain.Board;
-import book.alone.dto.BoardDto;
-import book.alone.dto.PageRequestDto;
-import book.alone.dto.PageResponseDto;
+import book.alone.dto.BoardDTO;
+
+import book.alone.dto.BoardListReplyCountDto;
+import book.alone.dto.PageRequestDTO;
+import book.alone.dto.PageResponseDTO;
 
 public interface BoardService {
-    Long register(BoardDto boardDto);
+    Long register(BoardDTO boardDto);
 
-    BoardDto read(Long bno);
+    BoardDTO read(Long bno);
 
-    void modify(BoardDto boardDto);
+    void modify(BoardDTO boardDto);
 
     void remove(Long bno);
 
-    PageResponseDto<BoardDto> list(PageRequestDto pageRequestDto);
-    PageResponseDto<BoardDto> list2(PageRequestDto pageRequestDto);
+    PageResponseDTO<BoardDTO> list(PageRequestDTO pageRequestDto);
+    PageResponseDTO<BoardDTO> list2(PageRequestDTO pageRequestDto);
+
+    PageResponseDTO<BoardListReplyCountDto> listWithReplyCount(PageRequestDTO pageRequestDto);
 
 }
