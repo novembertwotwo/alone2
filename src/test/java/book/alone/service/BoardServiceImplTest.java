@@ -24,7 +24,7 @@ class BoardServiceImplTest {
     @Autowired
     private BoardRepository boardRepository;
 
-    @BeforeEach
+    //@BeforeEach
     public void testInsert() {
         IntStream.rangeClosed(1,100).forEach(i->{
                     Board board = Board.builder()

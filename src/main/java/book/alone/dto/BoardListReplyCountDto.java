@@ -1,5 +1,6 @@
 package book.alone.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,13 @@ public class BoardListReplyCountDto {
     private String writer;
     private LocalDateTime regDate;
     private Long replyCount;
-
+    @QueryProjection
+    public BoardListReplyCountDto(Long bno, String title, String writer, LocalDateTime regDate, Long replyCount) {
+        this.bno = bno;
+        this.title = title;
+        this.writer = writer;
+        this.regDate = regDate;
+        this.replyCount = replyCount;
+    }
 }
 

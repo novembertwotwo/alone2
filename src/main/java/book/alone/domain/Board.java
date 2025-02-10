@@ -16,9 +16,12 @@ import javax.lang.model.element.NestingKind;
 @NoArgsConstructor
 @ToString
 public class Board extends BaseEntity{
+
     @Id
     @GeneratedValue
+    @Column(name = "board_id")
     private Long bno;
+
     @Column(length = 500,nullable = false)
     private String title;
     @Column(length = 20000,nullable = false)

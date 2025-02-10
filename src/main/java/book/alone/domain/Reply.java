@@ -12,9 +12,11 @@ import lombok.*;
 public class Reply extends BaseEntity {
     @Id
     @GeneratedValue
+
     private Long rno;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
     private Board board;
 
     private String replyText;

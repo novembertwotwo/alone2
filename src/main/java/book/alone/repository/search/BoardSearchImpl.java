@@ -3,8 +3,11 @@ package book.alone.repository.search;
 import book.alone.domain.Board;
 import book.alone.domain.QBoard;
 import book.alone.dto.BoardDto;
+import book.alone.dto.BoardListReplyCountDto;
 import book.alone.dto.QBoardDto;
+import book.alone.dto.QBoardListReplyCountDto;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 
 import static book.alone.domain.QBoard.board;
+import static book.alone.domain.QReply.reply;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -61,7 +65,12 @@ public class BoardSearchImpl implements BoardSearch {
                 .limit(pageable.getPageSize())
                 .orderBy(board.bno.asc())
                 .fetch();
-        long count = queryFactory.selectFrom(board).where(booleanBuilder).where(board.bno.gt(0L)).fetchCount();
+        Long count = queryFactory
+                .select(board.count())
+                .from(board)
+                .where(booleanBuilder)
+                .where(board.bno.gt(0L))
+                .fetchOne();
 
         return new PageImpl<>(list, pageable, count);
     }
@@ -94,12 +103,56 @@ public class BoardSearchImpl implements BoardSearch {
                 .limit(pageable.getPageSize())
                 .orderBy(board.bno.asc())
                 .fetch();
-        JPAQuery<BoardDto> countQuery = queryFactory
-                .select(new QBoardDto(board.bno, board.title, board.content, board.writer, board.regDate, board.modDate))
+        JPAQuery<Long> countQuery = queryFactory
+                .select(board.count())
                 .from(board)
                 .where(booleanBuilder)
                 .where(board.bno.gt(0L));
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<BoardListReplyCountDto> searchWithReplyCount(String[] types, String keyword, Pageable pageable) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if ((types != null&& types.length > 0) && keyword != null) {
+            for (String type : types) {
+                switch (type) {
+                    case "t":
+                        booleanBuilder.or(board.title.contains(keyword));
+                        break;
+                    case "c":
+                        booleanBuilder.or(board.content.contains(keyword));
+                        break;
+                    case "w":
+                        booleanBuilder.or(board.writer.contains(keyword));
+                        break;
+                }
+            }
+        }
+
+        List<BoardListReplyCountDto> content = queryFactory
+                .select(Projections.constructor(BoardListReplyCountDto.class
+                        ,board.bno
+                        ,board.title
+                        ,board.writer
+                        ,board.regDate
+                        ,reply.count()
+                ))
+                .from(board)
+                .leftJoin(reply)
+                .on(reply.board.eq(board))
+                .where(booleanBuilder)
+                .where(board.bno.gt(0L))
+                .groupBy(board.bno, board.title, board.writer, board.regDate)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        JPAQuery<Long> countQuery = queryFactory
+                .select(board.count())
+                .from(board)
+                .where(booleanBuilder)
+                .where(board.bno.gt(0L));
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
 
