@@ -14,4 +14,6 @@ public interface ReplyService {
 
     ReplyDTO read(Long rno);
 
+    PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO);
+
 }

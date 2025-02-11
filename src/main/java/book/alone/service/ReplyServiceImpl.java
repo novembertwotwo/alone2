@@ -1,13 +1,20 @@
 package book.alone.service;
 
 import book.alone.domain.Reply;
+import book.alone.dto.PageRequestDTO;
+import book.alone.dto.PageResponseDTO;
 import book.alone.dto.ReplyDTO;
 import book.alone.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -17,6 +24,7 @@ import java.util.Optional;
 public class ReplyServiceImpl implements ReplyService{
     private final ReplyRepository replyRepository;
     private final ModelMapper modelMapper;
+
 
 
     @Override
@@ -43,5 +51,18 @@ public class ReplyServiceImpl implements ReplyService{
         Optional<Reply> byId = replyRepository.findById(rno);
         Reply reply = byId.orElseThrow();
         return modelMapper.map(reply, ReplyDTO.class);
+    }
+
+    @Override
+    public PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("rno").ascending());
+        Page<Reply> result = replyRepository.listOfBoard(bno, pageable);
+        List<ReplyDTO> replyDTOList = result.map(o -> modelMapper.map(o, ReplyDTO.class)).toList();
+        return PageResponseDTO.<ReplyDTO>withAll()
+                .dtoList(replyDTOList)
+                .total((int) result.getTotalElements())
+                .pageRequestDto(pageRequestDTO)
+                .build();
+
     }
 }
