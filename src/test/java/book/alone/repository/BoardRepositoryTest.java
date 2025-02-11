@@ -2,9 +2,8 @@ package book.alone.repository;
 
 import book.alone.domain.Board;
 
-import book.alone.dto.BoardListReplyCountDto;
+import book.alone.dto.BoardListReplyCountDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableArgumentResolver;
-import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -105,7 +102,7 @@ class BoardRepositoryTest {
         String[] types = {};
         String keyword = "";
         Pageable pageable = PageRequest.of(9, 10);
-        Page<BoardListReplyCountDto> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
+        Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
         log.info("{}", result.getTotalPages());
         log.info("{}", result.getSize());
         log.info("{}", result.getNumber());

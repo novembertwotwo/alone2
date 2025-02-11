@@ -3,7 +3,7 @@ package book.alone.repository.search;
 import book.alone.domain.Board;
 import book.alone.domain.QBoard;
 import book.alone.dto.BoardDTO;
-import book.alone.dto.BoardListReplyCountDto;
+import book.alone.dto.BoardListReplyCountDTO;
 import book.alone.dto.QBoardDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -111,7 +111,7 @@ public class BoardSearchImpl implements BoardSearch {
     }
 
     @Override
-    public Page<BoardListReplyCountDto> searchWithReplyCount(String[] types, String keyword, Pageable pageable) {
+    public Page<BoardListReplyCountDTO> searchWithReplyCount(String[] types, String keyword, Pageable pageable) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if ((types != null&& types.length > 0) && keyword != null) {
             for (String type : types) {
@@ -129,8 +129,8 @@ public class BoardSearchImpl implements BoardSearch {
             }
         }
 
-        List<BoardListReplyCountDto> content = queryFactory
-                .select(Projections.constructor(BoardListReplyCountDto.class
+        List<BoardListReplyCountDTO> content = queryFactory
+                .select(Projections.constructor(BoardListReplyCountDTO.class
                         ,board.bno
                         ,board.title
                         ,board.writer

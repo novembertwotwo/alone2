@@ -6,14 +6,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class BoardListReplyCountDto {
+public class BoardListReplyCountDTO {
     private Long bno;
     private String title;
     private String writer;
     private LocalDateTime regDate;
     private Long replyCount;
     @QueryProjection
-    public BoardListReplyCountDto(Long bno, String title, String writer, LocalDateTime regDate, Long replyCount) {
+    public BoardListReplyCountDTO(Long bno, String title, String writer, LocalDateTime regDate, Long replyCount) {
         this.bno = bno;
         this.title = title;
         this.writer = writer;

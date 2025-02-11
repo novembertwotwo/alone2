@@ -1,7 +1,7 @@
 package book.alone.controller;
 
 import book.alone.dto.BoardDTO;
-import book.alone.dto.BoardListReplyCountDto;
+import book.alone.dto.BoardListReplyCountDTO;
 import book.alone.dto.PageRequestDTO;
 import book.alone.dto.PageResponseDTO;
 import book.alone.service.BoardService;
@@ -44,7 +44,7 @@ public class BoardController {
     }
 
     @PostMapping("/register")
-    public String registerPost(@Valid BoardDTO boardDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String registerPost(@Valid BoardDTO boardDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         log.info("board POST register....");
         if (bindingResult.hasErrors()) {
             log.info("has error");
@@ -52,38 +52,38 @@ public class BoardController {
             return "redirect:/board/register";
         }
 
-        log.info("{}", boardDto);
-        Long bno = boardService.register(boardDto);
+        log.info("{}", boardDTO);
+        Long bno = boardService.register(boardDTO);
         redirectAttributes.addFlashAttribute("result", bno);
         return "redirect:/board/list";
     }
 
     @GetMapping({"/read", "/modify"})
     public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
-        BoardDTO boardDto = boardService.read(bno);
-        log.info("{}", boardDto);
-        model.addAttribute("dto", boardDto);
+        BoardDTO boardDTO = boardService.read(bno);
+        log.info("{}", boardDTO);
+        model.addAttribute("dto", boardDTO);
         model.addAttribute("pageRequestDTO", pageRequestDTO);
     }
 
     @PostMapping
-    public String modify(PageRequestDTO pageRequestDto,
-                         @Valid BoardDTO boardDto,
+    public String modify(PageRequestDTO pageRequestDTO,
+                         @Valid BoardDTO boardDTO,
                          BindingResult bindingResult,
                          RedirectAttributes redirectAttributes) {
-        log.info("board modifyPost..... {}", boardDto);
+        log.info("board modifyPost..... {}", boardDTO);
         if (bindingResult.hasErrors()) {
             log.info("has Error");
-            String link = pageRequestDto.getLink();
+            String link = pageRequestDTO.getLink();
             redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
-            redirectAttributes.addFlashAttribute("bno", boardDto.getBno());
-            redirectAttributes.addFlashAttribute("pageRequestDTO", pageRequestDto);
+            redirectAttributes.addFlashAttribute("bno", boardDTO.getBno());
+            redirectAttributes.addFlashAttribute("pageRequestDTO", pageRequestDTO);
             return "redirect:/board/modify?" + link;
         }
-        boardService.modify(boardDto);
+        boardService.modify(boardDTO);
         redirectAttributes.addFlashAttribute("result", "modified");
-        redirectAttributes.addFlashAttribute("bno", boardDto.getBno());
-        redirectAttributes.addFlashAttribute("pageRequestDTO", pageRequestDto);
+        redirectAttributes.addFlashAttribute("bno", boardDTO.getBno());
+        redirectAttributes.addFlashAttribute("pageRequestDTO", pageRequestDTO);
         return "redirect:/board/read";
     }
 
@@ -100,8 +100,7 @@ public class BoardController {
 
     @ResponseBody
     @GetMapping("/list")
-    public PageResponseDTO<BoardListReplyCountDto> list(PageRequestDTO pageRequestDTO, Model model) {
-        PageResponseDTO<BoardListReplyCountDto> responseDTO = boardService.listWithReplyCount(pageRequestDTO);
-        return responseDTO;
+    public PageResponseDTO<BoardListReplyCountDTO> list(PageRequestDTO pageRequestDTO, Model model) {
+        return boardService.listWithReplyCount(pageRequestDTO);
     }
 }

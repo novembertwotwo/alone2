@@ -1,19 +1,19 @@
 package book.alone.repository;
 
-import book.alone.domain.QMember;
 import book.alone.dto.MemberSearchCondition;
 import book.alone.dto.MemberTeamDto;
 import book.alone.dto.QMemberTeamDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.BooleanOperation;
-import com.querydsl.jpa.impl.JPAQuery;
+
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
+
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -94,11 +94,11 @@ public class MemberQuerydslRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        JPAQuery<MemberTeamDto> countQuery = queryFactory.select(new QMemberTeamDto(member.id, member.username, member.age, team.id, team.name))
+        Long count = queryFactory.select(member.count())
                 .from(member)
                 .leftJoin(member.team, team)
-                .where(usernameEq(condition.getUsername()), teamNameEq(condition.getTeamName()), ageGoe(condition.getAgeGoe()), ageLoe(condition.getAgeLoe()));
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+                .where(usernameEq(condition.getUsername()), teamNameEq(condition.getTeamName()), ageGoe(condition.getAgeGoe()), ageLoe(condition.getAgeLoe())).fetchOne();
+        return new PageImpl<>(content, pageable, count);
     }
 
 

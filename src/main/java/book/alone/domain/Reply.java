@@ -22,4 +22,8 @@ public class Reply extends BaseEntity {
     private String replyText;
 
     private String replyer;
+
+    public void changeText(String replyText) {
+        this.replyText = replyText;
+    }
 }

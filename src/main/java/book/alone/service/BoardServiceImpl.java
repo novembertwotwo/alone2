@@ -3,7 +3,7 @@ package book.alone.service;
 import book.alone.domain.Board;
 import book.alone.dto.BoardDTO;
 
-import book.alone.dto.BoardListReplyCountDto;
+import book.alone.dto.BoardListReplyCountDTO;
 import book.alone.dto.PageRequestDTO;
 import book.alone.dto.PageResponseDTO;
 import book.alone.repository.BoardRepository;
@@ -87,14 +87,14 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public PageResponseDTO<BoardListReplyCountDto> listWithReplyCount(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
         String[] types = pageRequestDTO.getTypes();
         String keyword = pageRequestDTO.getKeyword();
         Pageable pageable = pageRequestDTO.getPageable("bno");
-        Page<BoardListReplyCountDto> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
+        Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
 
 
-        return PageResponseDTO.<BoardListReplyCountDto>withAll().pageRequestDto(pageRequestDTO)
+        return PageResponseDTO.<BoardListReplyCountDTO>withAll().pageRequestDto(pageRequestDTO)
                 .dtoList(result.getContent())
                 .total((int) result.getTotalElements())
                 .build();
