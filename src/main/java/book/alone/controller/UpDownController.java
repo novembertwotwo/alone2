@@ -6,7 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.parsing.PassThroughSourceExtractor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,6 +59,42 @@ public class UpDownController {
         }
         return null;
     }
+
+    @GetMapping("/view/{fileName}")
+    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
+        log.info("요청된 파일: {}", fileName);
+
+        // 파일 이름 검증 (디렉토리 탐색 공격 방지)
+        if (fileName.contains("..")) {
+            log.warn("잘못된 파일 이름 요청: {}", fileName);
+            return ResponseEntity.badRequest().build();
+        }
+
+        // FileSystemResource 생성
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+
+        // 파일 존재 여부 확인
+        if (!resource.exists() || !resource.isReadable()) {
+            log.warn("파일이 존재하지 않거나 읽을 수 없습니다: {}", fileName);
+            return ResponseEntity.notFound().build();
+        }
+
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
+            headers.add("Content-Disposition", "inline; filename=\"" + resource.getFilename() + "\"");
+        } catch (IOException e) {
+            log.error("파일의 Content-Type을 결정하는 중 오류 발생: {}", fileName, e);
+            return ResponseEntity.internalServerError().build();
+        }
+
+        // 응답 반환
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
+
 
 
 }
