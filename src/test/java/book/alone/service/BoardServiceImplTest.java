@@ -2,7 +2,7 @@ package book.alone.service;
 
 import book.alone.domain.Board;
 import book.alone.dto.BoardDTO;
-import book.alone.dto.BoardDto;
+
 import book.alone.dto.PageRequestDTO;
 import book.alone.dto.PageResponseDTO;
 import book.alone.repository.BoardRepository;

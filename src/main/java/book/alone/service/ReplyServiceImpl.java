@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Service
+@Transactional
 public class ReplyServiceImpl implements ReplyService{
     private final ReplyRepository replyRepository;
     private final ModelMapper modelMapper;
@@ -31,6 +33,7 @@ public class ReplyServiceImpl implements ReplyService{
     public Long register(ReplyDTO replyDTO) {
         Reply reply = modelMapper.map(replyDTO, Reply.class);
         return replyRepository.save(reply).getRno();
+
     }
 
     @Override
@@ -56,13 +59,18 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("rno").ascending());
+
         Page<Reply> result = replyRepository.listOfBoard(bno, pageable);
-        List<ReplyDTO> replyDTOList = result.map(o -> modelMapper.map(o, ReplyDTO.class)).toList();
+        List<ReplyDTO> replyDTOList = result
+                .getContent()
+                .stream()
+                .map(reply -> modelMapper.map(reply, ReplyDTO.class))
+                .toList();
         return PageResponseDTO.<ReplyDTO>withAll()
                 .dtoList(replyDTOList)
                 .total((int) result.getTotalElements())
                 .pageRequestDto(pageRequestDTO)
                 .build();
-
     }
+
 }

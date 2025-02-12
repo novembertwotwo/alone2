@@ -11,8 +11,7 @@ import lombok.*;
 @ToString(exclude = "board")
 public class Reply extends BaseEntity {
     @Id
-    @GeneratedValue
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long rno;
 
     @ManyToOne(fetch = FetchType.LAZY)
