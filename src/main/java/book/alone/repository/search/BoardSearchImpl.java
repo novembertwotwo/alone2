@@ -2,6 +2,7 @@ package book.alone.repository.search;
 
 import book.alone.domain.Board;
 import book.alone.domain.QBoard;
+import book.alone.domain.QBoardImage;
 import book.alone.dto.BoardDTO;
 import book.alone.dto.BoardListReplyCountDTO;
 import book.alone.dto.QBoardDTO;
@@ -15,14 +16,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static book.alone.domain.QBoard.board;
+import static book.alone.domain.QBoardImage.boardImage;
 import static book.alone.domain.QReply.reply;
+
 
 @Slf4j
 @RequiredArgsConstructor
+@Repository
 public class BoardSearchImpl implements BoardSearch {
     private final JPAQueryFactory queryFactory;
 
@@ -151,6 +157,18 @@ public class BoardSearchImpl implements BoardSearch {
                 .from(board)
                 .where(booleanBuilder)
                 .where(board.bno.gt(0L));
+
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
+
+    @Override
+    public Board findByIdFetch(Long id) {
+        return queryFactory
+                .selectFrom(board)
+                .leftJoin(board.imageSet, boardImage).fetchJoin() // Board와 BoardImage를 Fetch Join
+                .where(board.bno.eq(id))
+                .fetchOne();
+
+    }
+
 }

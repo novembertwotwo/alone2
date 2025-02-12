@@ -3,6 +3,9 @@ package book.alone.repository;
 import book.alone.domain.Board;
 
 import book.alone.dto.BoardListReplyCountDTO;
+import book.alone.repository.search.BoardSearch;
+import book.alone.repository.search.BoardSearchImpl;
+import book.alone.service.BoardServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableArgumentResolver;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -25,6 +31,12 @@ class BoardRepositoryTest {
     private BoardRepository boardRepository;
     @Autowired
     private PageableArgumentResolver pageableArgumentResolver;
+    @Autowired
+    private BoardServiceImpl boardServiceImpl;
+    @Autowired
+    private BoardSearchImpl boardSearch;
+
+
 
 
     @Test
@@ -108,6 +120,34 @@ class BoardRepositoryTest {
         log.info("{}", result.getNumber());
         log.info("{}", result.hasNext());
         result.getContent().forEach(boardListReplyCountDto -> log.info("{}", boardListReplyCountDto));
+    }
+    @Test
+    public void testInsertWithImages() {
+        Board board = Board.builder()
+                .title("Image Test")
+                .content("testttttt")
+                .writer("tk")
+                .build();
+        for (int i = 0; i < 3; i++) {
+            board.addImage(UUID.randomUUID().toString(), "file" + i + ".jpg");
+        }
+        boardRepository.save(board);
+    }
+    @Test
+    public void testReadWithImages() {
+        Board board = boardSearch.findByIdFetch(152L);
+
+        log.info("{}", board );
+        log.info("{}", board.getImageSet() );
+
+    }
+
+    @Transactional
+    @Commit
+    @Test
+    public void testModifyImages() {
+        Board board = boardSearch.findByIdFetch(202L);
+        board.clearImages();
     }
 
 

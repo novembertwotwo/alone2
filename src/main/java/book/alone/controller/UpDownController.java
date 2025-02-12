@@ -28,13 +28,10 @@ import java.util.*;
 @Slf4j
 public class UpDownController {
 
-    private final AssertTrueValidator assertTrueValidator;
+
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
-    public UpDownController(AssertTrueValidator assertTrueValidator) {
-        this.assertTrueValidator = assertTrueValidator;
-    }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<UploadResultDTO> upload(UploadFileDTO uploadFileDTO) {

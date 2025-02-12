@@ -7,6 +7,8 @@ import book.alone.dto.BoardListReplyCountDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface BoardSearch {
     Page<Board> search1(Pageable pageable);
 
@@ -15,4 +17,6 @@ public interface BoardSearch {
     Page<BoardDTO> searchAll2(String[] types, String keyword, Pageable pageable);
 
     Page<BoardListReplyCountDTO> searchWithReplyCount(String[] types, String keyword, Pageable pageable);
+
+    public Board findByIdFetch(Long id) ;
 }
