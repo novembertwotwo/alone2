@@ -4,6 +4,7 @@ import book.alone.dto.UploadFileDTO;
 import book.alone.dto.UploadResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnailator;
+import org.hibernate.validator.internal.constraintvalidators.bv.AssertTrueValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.parsing.PassThroughSourceExtractor;
 import org.springframework.core.io.FileSystemResource;
@@ -21,16 +22,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @Slf4j
 public class UpDownController {
 
+    private final AssertTrueValidator assertTrueValidator;
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
+
+    public UpDownController(AssertTrueValidator assertTrueValidator) {
+        this.assertTrueValidator = assertTrueValidator;
+    }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public List<UploadResultDTO> upload(UploadFileDTO uploadFileDTO) {
@@ -62,7 +66,6 @@ public class UpDownController {
 
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName) {
-        log.info("요청된 파일: {}", fileName);
 
         // 파일 이름 검증 (디렉토리 탐색 공격 방지)
         if (fileName.contains("..")) {
@@ -93,6 +96,26 @@ public class UpDownController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(resource);
+    }
+
+    @GetMapping("/remove/{fileName}")
+    public Map<String,Boolean> removeFile(@PathVariable String fileName) {
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+        String resourceName = resource.getFilename();
+        Map<String, Boolean> resultMap = new HashMap<>();
+        boolean removed = false;
+        try {
+            String contentType = Files.probeContentType(resource.getFile().toPath());
+            removed = resource.getFile().delete();
+            if (contentType.startsWith("image")) {
+                File thumbnailFile = new File(uploadPath + File.separator + "s_" + fileName);
+                thumbnailFile.delete();
+            }
+        } catch (Exception e) {
+            log.info("", e);
+        }
+        resultMap.put("result", removed);
+        return resultMap;
     }
 
 
