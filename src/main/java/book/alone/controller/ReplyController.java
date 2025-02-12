@@ -45,4 +45,12 @@ public class ReplyController {
         return replyService.getListOfBoard(bno, pageRequestDTO);
     }
 
+    @GetMapping("/{rno}")
+    public ReplyDTO getReplyDTO(@PathVariable("rno") Long rno) {
+        return replyService.read(rno);
+    }
+
+
+
+
 }
