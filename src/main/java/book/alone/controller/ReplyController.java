@@ -45,4 +45,23 @@ public class ReplyController {
         return replyService.getListOfBoard(bno, pageRequestDTO);
     }
 
+    @GetMapping("/{rno}")
+    public ReplyDTO getReplyDTO(@PathVariable("rno") Long rno) {
+        return replyService.read(rno);
+    }
+
+    @DeleteMapping("/{rno}")
+    public Map<String, Long> remove(@PathVariable("rno") Long rno) {
+        replyService.remove(rno);
+        Map<String, Long> map = new HashMap<>();
+        map.put("rno", rno);
+        return map;
+    }
+
+    @PutMapping(value = "/{rno}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ReplyDTO remove(@PathVariable("rno") Long rno, @RequestBody ReplyDTO replyDTO) {
+        replyDTO.setRno(rno);
+        replyService.modify(replyDTO);
+        return replyService.read(rno);
+    }
 }

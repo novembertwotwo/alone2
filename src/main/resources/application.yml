@@ -4,6 +4,12 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  servlet:
+    multipart:
+      enabled: true
+      location: /Users/tkHeo/Desktop/upload
+      max-request-size: 30MB
+      max-file-size: 10MB
   jpa:
     hibernate:
       ddl-auto: update
