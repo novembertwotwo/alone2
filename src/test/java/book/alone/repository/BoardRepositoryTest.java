@@ -2,6 +2,7 @@ package book.alone.repository;
 
 import book.alone.domain.Board;
 
+import book.alone.dto.BoardListAllDTO;
 import book.alone.dto.BoardListReplyCountDTO;
 import book.alone.repository.search.BoardSearch;
 import book.alone.repository.search.BoardSearchImpl;
@@ -35,8 +36,8 @@ class BoardRepositoryTest {
     private BoardServiceImpl boardServiceImpl;
     @Autowired
     private BoardSearchImpl boardSearch;
-
-
+    @Autowired
+    private ReplyRepository replyRepository;
 
 
     @Test
@@ -98,7 +99,7 @@ class BoardRepositoryTest {
     @Test
     public void testSearch() {
         Pageable pageable = PageRequest.of(1, 10, Sort.by("bno").descending());
-        boardRepository.search1(pageable);
+        boardSearch.search1(pageable);
     }
 
     @Test
@@ -106,7 +107,7 @@ class BoardRepositoryTest {
         String[] types = {"t", "c", "w"};
         String keyword = "1";
         Pageable pageable = PageRequest.of(0, 10, Sort.by("bno").descending());
-        Page<Board> boards = boardRepository.searchAll(types, keyword, pageable);
+        Page<Board> boards = boardSearch.searchAll(types, keyword, pageable);
     }
 
     @Test
@@ -114,7 +115,7 @@ class BoardRepositoryTest {
         String[] types = {};
         String keyword = "";
         Pageable pageable = PageRequest.of(9, 10);
-        Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
+        Page<BoardListReplyCountDTO> result = boardSearch.searchWithReplyCount(types, keyword, pageable);
         log.info("{}", result.getTotalPages());
         log.info("{}", result.getSize());
         log.info("{}", result.getNumber());
@@ -149,6 +150,44 @@ class BoardRepositoryTest {
         Board board = boardSearch.findByIdFetch(202L);
         board.clearImages();
     }
+
+    @Test
+    @Transactional
+    @Commit
+    public void testRemoveAll() {
+        Long bno = 402L;
+        replyRepository.deleteByBoard_Bno(bno);
+        boardRepository.deleteById(bno);
+    }
+    @Test
+    public void testInsertAll() {
+        for (int i = 1; i <= 100; i++) {
+            Board board = Board.builder()
+                    .title("Title.." + i)
+                    .content("Content.." + i)
+                    .writer("writer.." + i)
+                    .build();
+            for (int j = 0; j < 3; j++) {
+                if (i % 5 == 0) {
+                    continue;
+                }
+                board.addImage(UUID.randomUUID().toString(), i+"file"+j+".jpg");
+            }
+            boardRepository.save(board);
+        }
+    }
+    @Test
+    public void testSearchImageReplyCount() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<BoardListAllDTO> result = boardSearch.searchWithAll(null, null, pageable);
+        log.info("---------------------");
+        log.info("{}",result.getTotalElements());
+        result.getContent().forEach(boardListAllDTO -> log.info("{}",boardListAllDTO));
+
+    }
+
+
 
 
 }

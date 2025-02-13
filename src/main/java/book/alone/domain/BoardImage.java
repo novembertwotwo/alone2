@@ -1,6 +1,7 @@
 package book.alone.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -22,7 +23,7 @@ public class BoardImage implements Comparable<BoardImage> {
 
     private int ord;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
 

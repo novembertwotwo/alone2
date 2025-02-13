@@ -1,13 +1,13 @@
 package book.alone.repository.search;
 
 import book.alone.domain.Board;
+import book.alone.domain.BoardImage;
 import book.alone.domain.QBoard;
 import book.alone.domain.QBoardImage;
-import book.alone.dto.BoardDTO;
-import book.alone.dto.BoardListReplyCountDTO;
-import book.alone.dto.QBoardDTO;
+import book.alone.dto.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static book.alone.domain.QBoard.board;
 import static book.alone.domain.QBoardImage.boardImage;
@@ -170,5 +172,43 @@ public class BoardSearchImpl implements BoardSearch {
                 .fetchOne();
 
     }
+
+
+    @Transactional
+    @Override
+    public Page<BoardListAllDTO> searchWithAll(String[] types, String keyword, Pageable pageable) {
+        // 1. Fetch board data (excluding images)
+        List<Board> boards = queryFactory.selectFrom(board)
+                .leftJoin(reply).on(reply.board.eq(board))
+                .groupBy(board.bno)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 2. Trigger lazy loading for associated images
+        boards.forEach(b -> b.getImageSet().size());
+
+        // 3. Map to DTOs
+        List<BoardListAllDTO> content = boards.stream()
+                .map(b -> new BoardListAllDTO(
+                        b.getBno(),
+                        b.getTitle(),
+                        b.getWriter(),
+                        b.getRegDate(),
+                        (long) (b.getReplies() != null ? b.getReplies().size() : 0), // Calculate reply count safely
+                        b.getImageSet().stream()
+                                .map(img -> new BoardImageDTO(img.getUuid(), img.getFileName(), img.getOrd()))
+                                .collect(Collectors.toList())
+                ))
+                .collect(Collectors.toList());
+
+        // 4. Count total number of boards
+        JPAQuery<Long> countQuery = queryFactory.select(board.count()).from(board);
+
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
+    }
+
+
+
 
 }

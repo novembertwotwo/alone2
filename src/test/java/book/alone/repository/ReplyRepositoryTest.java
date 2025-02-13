@@ -2,6 +2,7 @@ package book.alone.repository;
 
 import book.alone.domain.Board;
 import book.alone.domain.Reply;
+import book.alone.repository.search.BoardSearch;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 class ReplyRepositoryTest {
     @Autowired
     private ReplyRepository replyRepository;
+    @Autowired
+    private BoardRepository boardRepository;
+    @Autowired
+    private BoardSearch boardSearch;
 
     @Test
     public void testInsert() {
-        Long bno = 100L;
+        Long bno = 402L;
         Board board = Board.builder().bno(bno).build();
 
         Reply reply = Reply.builder().board(board)
@@ -34,8 +39,9 @@ class ReplyRepositoryTest {
     }
 
     @Test
+
     public void testBoardReplies() {
-        Long bno = 100L;
+        Long bno = 402L;
 
         Pageable pageable = PageRequest.of(0, 10, Sort.by("rno").descending());
 
@@ -43,6 +49,7 @@ class ReplyRepositoryTest {
         replies.getContent().forEach(reply -> log.info("{}", reply));
 
     }
+
 
 
 }

@@ -1,10 +1,6 @@
 package book.alone.service;
 
-import book.alone.dto.BoardDTO;
-
-import book.alone.dto.BoardListReplyCountDTO;
-import book.alone.dto.PageRequestDTO;
-import book.alone.dto.PageResponseDTO;
+import book.alone.dto.*;
 
 public interface BoardService {
     Long register(BoardDTO boardDto);
@@ -19,5 +15,9 @@ public interface BoardService {
     PageResponseDTO<BoardDTO> list2(PageRequestDTO pageRequestDto);
 
     PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDto);
+
+    PageResponseDTO<BoardListAllDTO> listWithAll(PageRequestDTO pageRequestDTO);
+
+
 
 }

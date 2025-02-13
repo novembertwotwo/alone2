@@ -3,6 +3,7 @@ package book.alone.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
+import org.hibernate.annotations.BatchSize;
 
 import javax.lang.model.element.NestingKind;
 import java.util.ArrayList;
@@ -15,11 +16,10 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Board extends BaseEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "board_id")
     private Long bno;
 
@@ -30,9 +30,16 @@ public class Board extends BaseEntity{
     @Column(length = 50,nullable = false)
     private String writer;
 
-    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
+    @BatchSize(size = 20)
     private Set<BoardImage> imageSet = new HashSet<>();
+
+    @Getter
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private  List<Reply> replies = new ArrayList<>();
+
 
     public void addImage(String uuid, String fileName) {
         BoardImage boardImage = BoardImage.builder()
