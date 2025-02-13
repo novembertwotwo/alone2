@@ -50,6 +50,7 @@ public class Board extends BaseEntity{
                 .build();
         imageSet.add(boardImage);
     }
+
     public void clearImages() {
         imageSet.forEach(boardImage -> boardImage.changeBoard(null));
         this.imageSet.clear();

@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @Getter
 public class BoardDTO {
@@ -22,8 +22,9 @@ public class BoardDTO {
     private String writer;
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+    private List<String> fileNames;
 
-
+    @Builder
     @QueryProjection
     public BoardDTO(Long bno, String title, String content, String writer, LocalDateTime regDate, LocalDateTime modDate) {
         this.bno = bno;
